@@ -41,5 +41,6 @@ python manage.py migrate
 python3 manage.py runserver
 ```
 Примеры иcпользования
+1
 ----------
 Документация доступна по адресу ```/redoc/```.
