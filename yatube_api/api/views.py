@@ -2,8 +2,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework import filters, permissions, viewsets
 
 from posts.models import Group, Post
-from .pagination import PostsPagination
-from .permissions import IsAuthor
+from .mixins import GetFollowMixin
+from .permissions import CanPost, IsAuthor
 from .serializers import (CommentSerializer, FollowSerializer, GroupSerializer,
                           PostSerializer)
 
@@ -11,8 +11,7 @@ from .serializers import (CommentSerializer, FollowSerializer, GroupSerializer,
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    pagination_class = PostsPagination
-    permission_classes = (IsAuthor, permissions.IsAuthenticatedOrReadOnly)
+    permission_classes = (IsAuthor, CanPost)
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -21,12 +20,13 @@ class PostViewSet(viewsets.ModelViewSet):
 class GroupViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    pagination_class = None
 
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = (IsAuthor, permissions.IsAuthenticatedOrReadOnly)
+    permission_classes = (IsAuthor, CanPost)
+    pagination_class = None
 
     def get_post(self):
         return get_object_or_404(Post, pk=self.kwargs['post_id'])
@@ -38,10 +38,12 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user, post=self.get_post())
 
 
-class FollowViewSet(viewsets.ModelViewSet):
+class FollowViewSet(GetFollowMixin):
     serializer_class = FollowSerializer
+    permission_classes = (permissions.IsAuthenticated,)
     filter_backends = (filters.SearchFilter,)
-    search_fields = ('following__username',)
+    search_fields = ('^following__username',)
+    pagination_class = None
 
     def get_queryset(self):
         return self.request.user.follower.all()
