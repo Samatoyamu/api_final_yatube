@@ -32,7 +32,7 @@ pip install -r requirements.txt
 ```bash
 cd yatube_api
 python manage.py migrate
-python3 manage.py runserver
+python manage.py runserver
 ```
 Примеры иcпользования
 ----------
