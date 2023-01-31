@@ -59,6 +59,17 @@ python manage.py runserver
 ```bash
 /api/v1/groups/
 ```
+Ответ
+```bash
+[
+  {
+    "id": 0,
+    "title": "Название",
+    "slug": "Слаг",
+    "description": "Описание"
+  }
+]
+```
 Нужен конкретный пост или сообщество? не проблема
 ```bash
 /api/v1/posts/{id поста}/
