@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import filters, permissions, viewsets
 
 from posts.models import Group, Post
-from .mixins import GetFollowMixin
+from .mixins import GetPostFollowMixin
 from .permissions import CanPost, IsAuthor
 from .serializers import (CommentSerializer, FollowSerializer, GroupSerializer,
                           PostSerializer)
@@ -38,7 +38,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user, post=self.get_post())
 
 
-class FollowViewSet(GetFollowMixin):
+class FollowViewSet(GetPostFollowMixin):
     serializer_class = FollowSerializer
     permission_classes = (permissions.IsAuthenticated,)
     filter_backends = (filters.SearchFilter,)
